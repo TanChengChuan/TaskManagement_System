@@ -9,7 +9,7 @@ var JwtSecret = []byte("#HswACG10100100010") // 替换为你的密钥
 var jwtExpirationDelta = time.Hour * 720     // token 有效期，这里设置为 30 天
 
 // 创建 JWT token 返回给用户登录后的。
-func generateToken(username string) (string, error) {
+func GenerateToken(username string) (string, error) {
 	//这里可以是数据库调用  看用户名是否对的上？
 
 	expirationTime := time.Now().Add(jwtExpirationDelta) //表明期限

@@ -43,7 +43,7 @@ func TMTask() {
 		c.Set("db", db)
 		c.Next()
 	})
-	slog.Info("db connect success")
+	slog.Info("db connect success") //这里加一个switch - case
 	e.POST("/task", routes.CreateTask)
 	e.DELETE("/task", routes.DeleteTask)
 	e.PUT("/task/:id", routes.UpdateTask)

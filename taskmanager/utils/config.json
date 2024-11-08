@@ -1,0 +1,15 @@
+{
+  "header": {
+    "issuer": "example_issuer",
+    "audience": "example_audience",
+    "expires": 3600,
+    "secret_key": "your_secret_key"
+  },
+  "payload": {
+    "alg": "HS256",
+    "typ": "JWT"
+  },
+  "signature": {
+    
+  }
+ }

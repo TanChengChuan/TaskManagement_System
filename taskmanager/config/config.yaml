@@ -1,4 +1,58 @@
 #用户信息
 
-useraccount: null
-userpassword: null
+username: null
+password: null
+
+
+#任务模型
+
+
+
+
+
+#解释如下的含义：
+#prefix:
+#含义: 日志前缀。
+#代表: 所有日志消息前都会加上这个前缀，这里是"ZapLogTest"。这有助于在查看日志时快速识别日志来源。
+#timeFormat:
+#含义: 日志时间格式。
+#代表: 日志中时间戳的格式。这里使用的是Go语言的时间格式，即"2006/01/02 - 15:04:05.00000"，意味着时间戳会包含年、月、日、时、分、秒以及微秒。
+#level:
+#含义: 日志级别。
+#代表: 控制日志输出的详细程度。常见的日志级别有debug、info、warn、error等。这里设置为"debug"，意味着会输出所有级别的日志。
+#caller:
+#含义: 是否记录调用者信息。
+#代表: 如果设置为true，日志中会包含生成日志的代码位置（文件名和行号）。这对于调试非常有用。
+#stackTrace:
+#含义: 是否记录堆栈跟踪信息。
+#代表: 在记录错误日志时，是否包含堆栈跟踪。这里设置为false，意味着不会记录堆栈跟踪信息。
+#encode:
+#含义: 日志编码方式。
+#代表: 日志的输出格式。这里设置为"console"，意味着日志会以适合控制台输出的格式显示。其他可能的值可能包括"json"等。
+#writer:
+#含义: 日志输出目标。
+#代表: 指定日志输出到哪里。这里设置为"both"，意味着日志会同时输出到文件和控制台。其他选项可能包括"file"（仅文件）和"console"（仅控制台）。
+#logFile:
+#含义: 日志文件配置。
+#代表: 当日志输出到文件时，相关文件的配置信息。
+#子项:
+#maxSize: 日志文件的最大大小（单位MB）。这里设置为20MB，意味着当日志文件达到20MB时，会进行滚动（即创建新文件）。
+#backups: 保留的旧日志文件数量。这里设置为5，意味着会保留最近的5个旧日志文件。
+#compress: 是否压缩旧日志文件。这里设置为true，意味着旧日志文件会被压缩存储。
+#output: 日志文件的输出路径列表。这里指定了"./log/output.log"，意味着日志文件会输出到当前目录下的"log/output.log"文件中。
+#日志编码
+zap:
+  prefix: ZapLogTest
+  timeFormat: 2006/01/02 - 15:04:05.00000
+  level: debug
+  caller: true
+  stackTrace: false #堆栈情况
+  encode: console
+  #日志输出位置：console , file 或者 both
+  writer: both
+  logfile:
+    maxsize: 20
+    backups: 5
+    compress: true
+    output:
+      - "./log/output.log"

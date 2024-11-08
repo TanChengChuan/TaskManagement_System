@@ -14,13 +14,17 @@ var dsn = "root:hsw20050529@tcp(127.0.0.1:3306)/taskmanagement?charset=utf8mb4&p
 var db *gorm.DB
 
 type Task struct {
-	ID          uint
-	Title       string
-	Description string
-	Status      int //可以用数字 分别表达pending, in-progress, completed
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	OwnerID     uint
+	ID          uint      `gorm:"primary_key" json:"ID"`
+	Title       string    ` json:"Title"`
+	Description string    ` json:"Description"`
+	Status      int       `json:"Status" ` //可以用数字 分别表达pending, in-progress, completed
+	CreatedAt   time.Time `json:"CreatedAt"`
+	UpdatedAt   time.Time `json:"UpdatedAt"`
+	OwnerID     uint      `json:"OwnerID"`
+}
+
+type TaskBatch struct {
+	Tasks []Task `json:"tasks"`
 }
 
 func TMTask() {

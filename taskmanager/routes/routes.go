@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"TaskManagement_System/controllers"
 	"TaskManagement_System/models"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -95,12 +96,28 @@ func GetsingleTask(c *gin.Context) {
 
 func ImportTask(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
-	var task models.Task
-	if err := c.ShouldBindJSON(&task); err != nil {
+	var taskBatch models.TaskBatch
+	if err := c.ShouldBindJSON(&taskBatch); err != nil { //先绑定JSON数据到taskBatch上
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
+	//数组遍历
+	for _, task := range taskBatch.Tasks {
+		controllers.Wg.Add(1) //每个任务启动一个goroutine
+		go func(t models.Task) {
+			defer controllers.Wg.Done()
+			if err := db.Create(&task).Error; err != nil {
+				c.JSON(500, gin.H{"error": "Create Fail"})
+			}
+		}(task)
+
+	}
+	controllers.Wg.Wait()
+	c.JSON(200, gin.H{"message": "Tasks imported successfully"})
 	//接收一个包含多个任务信息的JSON数组，批量创建任务。
+	/*- 接收一个包含多个任务信息的JSON数组，批量创建任务。  与创建任务不同，这里是直接接受多个任务信息，一整块，然后不断地创建任务。
+	//方式：1.创建数组，2.向数组传递信息。3.数组JSON解析 4.接受解析过后的数组。5.for循环遍历数组，不断传入。用并发创建。
+	- 实现并发处理，提高导入性能，确保线程安全。*/
 }
 
 //------------------------------------------------------------------------

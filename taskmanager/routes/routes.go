@@ -2,7 +2,9 @@ package routes
 
 import (
 	"TaskManagement_System/controllers"
+	"TaskManagement_System/middlewares"
 	"TaskManagement_System/models"
+	"TaskManagement_System/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
@@ -167,7 +169,9 @@ func LoginHandler(c *gin.Context) {
 	}
 
 	//生成JWT令牌
-
+	utils.GenerateToken(user.Username)
+	//JWT中间件认证 , 该如何认证？
+	middlewares.JWTAuthMiddleware()
 	//登录成功
 	c.JSON(http.StatusCreated, gin.H{"message": "User login"})
 }

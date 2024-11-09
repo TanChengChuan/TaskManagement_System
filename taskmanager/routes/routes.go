@@ -1,14 +1,36 @@
 package routes
 
 import (
-	"TaskManagement_System/controllers"
 	"TaskManagement_System/middlewares"
 	"TaskManagement_System/models"
 	"TaskManagement_System/utils"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
+	"sync"
 )
+
+// 使用WaitGroup来等待所有goroutine完成
+var Wg sync.WaitGroup
+
+func SetupRouter(r *gin.Engine) {
+	//分路由组
+	authGroup := r.Group("/auth")
+	{
+		authGroup.POST("/register", RegisterHandler)
+		authGroup.POST("/login", LoginHandler)
+	}
+	//认证加中间件
+	taskGroup := r.Group("/tasks")
+	{
+		taskGroup.POST("/", CreateTask)
+		taskGroup.GET("/", GetallTasks)
+		taskGroup.GET("/:id", GetsingleTask)
+		taskGroup.PUT("/:id", UpdateTask)
+		taskGroup.DELETE("/task", DeleteTask)
+		taskGroup.POST("/import", ImportTask)
+	}
+}
 
 func CreateTask(c *gin.Context) { //创建任务
 	//迁移通常不是直接在这里进行的。迁移通常是在应用启动或数据库初始化时执行的，而不是在每个API端点中单独执行。
@@ -106,16 +128,16 @@ func ImportTask(c *gin.Context) {
 	}
 	//数组遍历
 	for _, task := range taskBatch.Tasks {
-		controllers.Wg.Add(1) //每个任务启动一个goroutine
+		Wg.Add(1) //每个任务启动一个goroutine
 		go func(t models.Task) {
-			defer controllers.Wg.Done()
+			defer Wg.Done()
 			if err := db.Create(&task).Error; err != nil {
 				c.JSON(500, gin.H{"error": "Create Fail"})
 			}
 		}(task)
 
 	}
-	controllers.Wg.Wait()
+	Wg.Wait()
 	c.JSON(200, gin.H{"message": "Tasks imported successfully"})
 	//接收一个包含多个任务信息的JSON数组，批量创建任务。
 	/*- 接收一个包含多个任务信息的JSON数组，批量创建任务。  与创建任务不同，这里是直接接受多个任务信息，一整块，然后不断地创建任务。

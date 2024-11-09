@@ -38,8 +38,18 @@ task_batches:
         UpdatedAt: "2023-04-04T00:00:00Z"
 
 
+### 后面注： 检查的时候发现好像根本不需要用到这玩意....
 
+#database & server
 
+server:
+  port: 8080
+database:
+  user: "root"
+  password: "hsw20050529"
+  name: "taskmanagement"
+  host: "localhost"
+  port: 3306
 
 
 #解释如下的含义：

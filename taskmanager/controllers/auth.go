@@ -40,6 +40,7 @@ func TMuser(i int) {
 
 	}
 	// 将配置解析到结构体中
+	var userconfig models.User
 	var zapconfig utils.ZapConfig
 	if err := viper.Unmarshal(&zapconfig); err != nil {
 		fmt.Printf("unable to decode into config struct, %v", err)

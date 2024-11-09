@@ -32,7 +32,7 @@ func TMTask() {
 
 	//可加循环，然后退出。
 	for {
-		models.DB.AutoMigrate(&models.Task{}) //每一次都迁移
+		models.DB.AutoMigrate(&models.Task{}) //每一次都迁移 ->可以优化为 创建，删除，更新，导入时 再迁移。 （后面再说）
 		fmt.Println("请选择你想要的进行的选项\n\t[1]创建新任务\n\t[2]删除任务\n\t[3]更新任务\n\t[4]获取单项任务\n\t[5]获取所有任务\n\t[6]导入任务\n\t[7]退出程序")
 		var i int
 		fmt.Scanf("%d", &i)

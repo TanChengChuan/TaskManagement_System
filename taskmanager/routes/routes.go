@@ -11,6 +11,7 @@ import (
 )
 
 func CreateTask(c *gin.Context) { //创建任务
+	//迁移通常不是直接在这里进行的。迁移通常是在应用启动或数据库初始化时执行的，而不是在每个API端点中单独执行。
 	db := c.MustGet("db").(*gorm.DB)
 	task := models.Task{
 		Title:       "tasktitle",

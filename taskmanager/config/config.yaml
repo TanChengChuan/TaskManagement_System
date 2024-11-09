@@ -1,10 +1,42 @@
-#用户信息
+#用户信息&任务模型
 
-username: null
-password: null
+users:
+  - UserID: 1
+    username: user1
+    password: password123 # 请确保在生产环境中安全存储密码
+    tasks:
+      - TaskID: 1
+        Title: "Task 1 for User 1"
+        Description: "Description for Task 1"
+        Status: 0 # 假设0表示completed
+        CreatedAt: "2023-04-01T00:00:00Z"
+        UpdatedAt: "2023-04-01T00:00:00Z"
+      - TaskID: 2
+        Title: "Task 2 for User 1"
+        Description: "Description for Task 2"
+        Status: 1 # 假设1表示in-progress
+        CreatedAt: "2023-04-02T00:00:00Z"
+        UpdatedAt: "2023-04-02T00:00:00Z"
+  - UserID: 2
+    username: user2
+    password: password456
+    tasks: []
 
+task_batches:
+  - tasks:
+      - TaskID: 3
+        Title: "Batch Task 1"
+        Description: "Description for Batch Task 1"
+        Status: -1 # 假设-1表示pending
+        CreatedAt: "2023-04-03T00:00:00Z"
+        UpdatedAt: "2023-04-03T00:00:00Z"
+      - TaskID: 4
+        Title: "Batch Task 2"
+        Description: "Description for Batch Task 2"
+        Status: 0
+        CreatedAt: "2023-04-04T00:00:00Z"
+        UpdatedAt: "2023-04-04T00:00:00Z"
 
-#任务模型
 
 
 

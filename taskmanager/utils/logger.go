@@ -41,7 +41,7 @@ func zapEncoder(config *ZapConfig) zapcore.Encoder {
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("$HOME/") // 使用变量  //环境变量
-	viper.AddConfigPath(".")      // 在工作目录下查找
+	// 在工作目录下查找
 
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatalln(err)

@@ -6,14 +6,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// 数据库
+// 数据库后面加连接池优化。
+// 用户名:密码啊@tcp(ip:端口)/数据库的名字
+// 引入数据库
+// /迁移数据库
+// // 将数据库实例存储到Gin的上下文中
+// 每次启动要 数据库连接
 func TMTask(e *gin.Engine) {
-	//数据库
-	//数据库后面加连接池优化。
-	//用户名:密码啊@tcp(ip:端口)/数据库的名字
-	//引入数据库
-	///迁移数据库
-	//// 将数据库实例存储到Gin的上下文中
-	//每次启动要 数据库连接
 
 	e.Use(func(c *gin.Context) {
 		c.Set("db", models.DB)
@@ -33,7 +33,7 @@ func TMTask(e *gin.Engine) {
 	case 4:
 	case 5:
 	case 6:
-		//应该是在main函数调用吗？->是的
+		//应该是在main函数调用吗？->是的(URL) 这里不作处理吧
 	case 7:
 		fmt.Println("期待与你的下一次相遇~")
 		ClearScreen()

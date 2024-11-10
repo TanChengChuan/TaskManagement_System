@@ -29,7 +29,7 @@ func SetupRouter(r *gin.Engine) {
 		taskGroup.GET("/", GetallTasks)
 		taskGroup.GET("/:id", GetsingleTask)
 		taskGroup.PUT("/:id", UpdateTask)
-		taskGroup.DELETE("/task", DeleteTask)
+		taskGroup.DELETE("/:id", DeleteTask)
 		taskGroup.POST("/import", ImportTask)
 	}
 }

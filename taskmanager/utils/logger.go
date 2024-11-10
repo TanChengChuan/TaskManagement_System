@@ -37,7 +37,7 @@ type LogFileConfig struct {
 
 func zapEncoder(config *ZapConfig) zapcore.Encoder {
 	//用viper读取配置 ,  考虑做多个配置文件，还是一个配置文件塞多个配置。
-	viper.SetConfigName("config.yaml")
+	viper.SetConfigName("config.json")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("$HOME/") // 使用变量  //环境变量

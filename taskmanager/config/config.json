@@ -1,0 +1,97 @@
+{
+  "users": [
+    {
+      "UserID": 1,
+      "username": "user1",
+      "password": "password123",
+      "tasks": [
+        {
+          "TaskID": 1,
+          "Title": "Task 1 for User 1",
+          "Description": "Description for Task 1",
+          "Status": 0,
+          "CreatedAt": "2023-04-01T00:00:00Z",
+          "UpdatedAt": "2023-04-01T00:00:00Z"
+        },
+        {
+          "TaskID": 2,
+          "Title": "Task 2 for User 1",
+          "Description": "Description for Task 2",
+          "Status": 1,
+          "CreatedAt": "2023-04-02T00:00:00Z",
+          "UpdatedAt": "2023-04-02T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "UserID": 2,
+      "username": "user2",
+      "password": "password456",
+      "tasks": []
+    }
+  ],
+  "task_batches": [
+    {
+      "tasks": [
+        {
+          "TaskID": 3,
+          "Title": "Batch Task 1",
+          "Description": "Description for Batch Task 1",
+          "Status": -1,
+          "CreatedAt": "2023-04-03T00:00:00Z",
+          "UpdatedAt": "2023-04-03T00:00:00Z"
+        },
+        {
+          "TaskID": 4,
+          "Title": "Batch Task 2",
+          "Description": "Description for Batch Task 2",
+          "Status": 0,
+          "CreatedAt": "2023-04-04T00:00:00Z",
+          "UpdatedAt": "2023-04-04T00:00:00Z"
+        }
+      ]
+    }
+  ],
+  "server": {
+    "port": 8080
+  },
+  "database": {
+    "user": "root",
+    "password": "hsw20050529",
+    "name": "taskmanagement",
+    "host": "localhost",
+    "port": 3306
+  },
+  "zap": {
+    "prefix": "ZapLogTest",
+    "timeFormat": "2006/01/02 - 15:04:05.00000",
+    "level": "debug",
+    "caller": true,
+    "stackTrace": false,
+    "encode": "console",
+    "writer": "both",
+    "logfile": {
+      "maxsize": 20,
+      "backups": 5,
+      "compress": true,
+      "output": [
+        "./log/output.log"
+      ]
+    }
+  },
+  "jwt": {
+
+  "header": {
+    "issuer": "example_issuer",
+    "audience": "example_audience",
+    "expires": 3600,
+    "secret_key": "your_secret_key"
+  },
+  "payload": {
+    "alg": "HS256",
+    "typ": "JWT"
+  },
+  "signature": "SigningMethodHS256"
+
+  }
+}

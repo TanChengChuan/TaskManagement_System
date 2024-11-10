@@ -50,11 +50,5 @@ func TMuser(i int, e *gin.Engine) {
 	//
 	// 这里不知道与task的 数据库连接 是否冲突。
 	//要加一个经过认证 才能访问任务管理相关的接口,其实直接在 调用处加入一个if语句，然后接收JWTtoken 并且与密钥进行比对即可，
-	/*switch i {
-	case 1:
-		e.POST("/POST", routes.RegisterHandler)
-	case 2:
-		e.POST("/POST", routes.LoginHandler)
-	}
-	*/
+
 }

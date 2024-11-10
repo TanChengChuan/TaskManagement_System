@@ -19,7 +19,10 @@ func main() {
 	//加一个for循环
 	viper.SetConfigName("config")
 	viper.AddConfigPath("./config")
-	viper.SetConfigType("yaml")
+	viper.SetConfigType("json")
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf("Error reading config file, %s", err)
+	}
 	var err error
 	e := gin.Default()
 	models.DB, err = gorm.Open(mysql.Open(models.DSN))

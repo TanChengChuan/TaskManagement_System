@@ -6,12 +6,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"net/http"
-	"strings"
 )
 
 // - **认证中间件：** 验证请求头中的JWT token，确保用户已认证。
 
-func JWTAuthMiddleware() gin.HandlerFunc {
+func JWTAuthMiddleware(signedToken string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -21,17 +20,17 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		//拆分 bearer 和 token  （正确的人 拿着正确的钥匙）
+		/*//拆分 bearer 和 token  （正确的人 拿着正确的钥匙）
 		parts := strings.SplitN(authHeader, " ", 2)
 		if !(len(parts) == 2 && parts[0] == "Bearer") {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is invalid"})
 			c.Abort()
 			return
 		}
-
+		*/
 		//解析 token
-		tokenString := parts[1]
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		//tokenString := parts[1]
+		token, err := jwt.Parse(signedToken, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 			}

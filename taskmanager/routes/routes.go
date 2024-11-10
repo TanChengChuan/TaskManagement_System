@@ -4,8 +4,10 @@ import (
 	"TaskManagement_System/middlewares"
 	"TaskManagement_System/models"
 	"TaskManagement_System/utils"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"log"
 	"net/http"
 	"sync"
 )
@@ -43,7 +45,7 @@ func CreateTask(c *gin.Context) { //创建任务
 		//这里加入用户关联。关联用户ID  属于 一对多的关系  一个任务 对应 多个玩家
 		//创建任务应该自己决定>
 	}
-	if err := c.ShouldBind(&task); err != nil {
+	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -61,7 +63,7 @@ func CreateTask(c *gin.Context) { //创建任务
 func UpdateTask(c *gin.Context) { //更新任务
 	var task models.Task
 	db := c.MustGet("db").(*gorm.DB)
-	if err := c.ShouldBind(&task); err != nil {
+	if err := c.ShouldBindJSON(&task); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -122,7 +124,7 @@ func GetsingleTask(c *gin.Context) {
 func ImportTask(c *gin.Context) {
 	db := c.MustGet("db").(*gorm.DB)
 	var taskBatch models.TaskBatch
-	if err := c.ShouldBind(&taskBatch); err != nil { //先绑定JSON数据到taskBatch上
+	if err := c.ShouldBindJSON(&taskBatch); err != nil { //先绑定JSON数据到taskBatch上
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -148,10 +150,11 @@ func ImportTask(c *gin.Context) {
 //------------------------------------------------------------------------
 
 func RegisterHandler(c *gin.Context) {
+
 	db := c.MustGet("db").(*gorm.DB)
 	var user models.User
-	//必须要想办法  通过某种方式读入用户名 用户密码 （考虑curl 或者 说是url 读取）
-	if err := c.ShouldBind(&user); err != nil {
+	//必须要想办法  通过某种方式读入用户名 用户密码 （考虑curl 或者 说是url 读取） -》数据绑定
+	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	} //代表user非空
@@ -181,20 +184,37 @@ func RegisterHandler(c *gin.Context) {
 }
 
 func LoginHandler(c *gin.Context) {
+
 	var user models.User
-	if err := c.ShouldBind(&user); err != nil {
+	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
+
 	//对账号密码进行比对，同样要加入数据库
 	//如果不正确: || 以及用户名不存在
-	if user.Username != user.Password { //记得后续判断用户是否存在
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
-	}
+	//if user.Username != user.Password { //记得后续判断用户是否存在 	啊？
+	//c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
+	//	return
+	//} //我都不知道你在写什么 -》 跟数据库的名字进行比对
 
 	//生成JWT令牌
-	utils.GenerateToken(user.Username)
+	token, err := utils.GenerateToken(user.Username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return
+	}
 	//JWT中间件认证 , 该如何认证？
-	middlewares.JWTAuthMiddleware()
+	middlewares.JWTAuthMiddleware(token)
+	authenticated, err := models.CheckUserCredentials(user.Username, user.Password)
+	if err != nil {
+		log.Fatalf("error authenticating user: %v", err)
+	}
+
+	if authenticated {
+		fmt.Println("Authentication successful!")
+	} else {
+		fmt.Println("Authentication failed.")
+	}
 	//登录成功
 	c.JSON(http.StatusCreated, gin.H{"message": "User login"})
 }

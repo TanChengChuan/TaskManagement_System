@@ -6,6 +6,7 @@ import (
 	"TaskManagement_System/utils"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
@@ -17,13 +18,16 @@ var Wg sync.WaitGroup
 
 func SetupRouter(r *gin.Engine) {
 	//分路由组
+
 	authGroup := r.Group("/auth")
 	{
 		authGroup.POST("/register", RegisterHandler)
 		authGroup.POST("/login", LoginHandler)
+		authGroup.GET("/allusers", GetallUsers)
 	}
 	//认证加中间件
 	taskGroup := r.Group("/tasks")
+	taskGroup.Use(middlewares.JWTAuthMiddleware())
 	{
 		taskGroup.POST("/", CreateTask)
 		taskGroup.GET("/", GetallTasks)
@@ -33,14 +37,25 @@ func SetupRouter(r *gin.Engine) {
 		taskGroup.POST("/import", ImportTask)
 	}
 }
-
+func GetallUsers(c *gin.Context) { //仅供调试（查看所有用户）
+	var users []models.User
+	db := c.MustGet("db").(*gorm.DB)
+	if err := db.Model(&models.User{}).Find(&users).Error; err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"users": users})
+}
 func CreateTask(c *gin.Context) { //创建任务
 	//迁移通常不是直接在这里进行的。迁移通常是在应用启动或数据库初始化时执行的，而不是在每个API端点中单独执行。
 	db := c.MustGet("db").(*gorm.DB)
+
+	ownerID := viper.GetUint("OwnerID")
 	task := models.Task{
 		Title:       "tasktitle",
 		Description: "taskdescription",
 		Status:      -1, //pending 对应 -1   in-progress 对应 1   completed 对应0
+		OwnerID:     ownerID,
 		//创建时间，更新时间自动获取。
 		//这里加入用户关联。关联用户ID  属于 一对多的关系  一个任务 对应 多个玩家
 		//创建任务应该自己决定>
@@ -156,6 +171,7 @@ func RegisterHandler(c *gin.Context) {
 	//必须要想办法  通过某种方式读入用户名 用户密码 （考虑curl 或者 说是url 读取） -》数据绑定
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.Abort()
 		return
 	} //代表user非空
 
@@ -165,6 +181,7 @@ func RegisterHandler(c *gin.Context) {
 	result := db.First(&existingUser, "username = ?", user.Username)
 	if result.RowsAffected == 1 { //存在用户
 		c.JSON(http.StatusConflict, gin.H{"error": "Username already exists"})
+		c.Abort()
 		return
 	}
 	//用户输入账号密码,注册一个用户的表单，
@@ -177,14 +194,14 @@ func RegisterHandler(c *gin.Context) {
 		return
 	}
 	//密码是否进行 哈希处理？？？ 防止数据库泄漏
-
+	fmt.Println(user.ID)
 	//最后返回一条信息，表示注册成功
 	c.JSON(http.StatusCreated, gin.H{"message": "User created"})
 
 }
 
 func LoginHandler(c *gin.Context) {
-
+	db := c.MustGet("db").(*gorm.DB)
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -192,29 +209,27 @@ func LoginHandler(c *gin.Context) {
 
 	//对账号密码进行比对，同样要加入数据库
 	//如果不正确: || 以及用户名不存在
-	//if user.Username != user.Password { //记得后续判断用户是否存在 	啊？
-	//c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
-	//	return
-	//} //我都不知道你在写什么 -》 跟数据库的名字进行比对
-
-	//生成JWT令牌
-	token, err := utils.GenerateToken(user.Username)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
-		return
-	}
-	//JWT中间件认证 , 该如何认证？
-	middlewares.JWTAuthMiddleware(token)
 	authenticated, err := models.CheckUserCredentials(user.Username, user.Password)
 	if err != nil {
 		log.Fatalf("error authenticating user: %v", err)
+		c.Abort()
+		return
 	}
-
+	if err = db.Where("username = ?", user.Username).First(&user).Error; err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
+		return
+	} //寻找对应的user
 	if authenticated {
 		fmt.Println("Authentication successful!")
 	} else {
 		fmt.Println("Authentication failed.")
+		c.Abort()
+		return
 	}
+	//生成JWT令牌
+	utils.GenerateToken(user.Username)
+
 	//登录成功
-	c.JSON(http.StatusCreated, gin.H{"message": "User login"})
+	viper.Set("OwnerID", user.ID)
+	c.JSON(http.StatusOK, gin.H{"message": "User login", "UserID": user.ID})
 }

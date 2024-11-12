@@ -14,8 +14,6 @@ func Test_task(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to connect database: %v", err)
 	}
-
-	//可加循环，然后退出。-》加屁，错了
 	models.DB.AutoMigrate(&models.Task{}) //每一次都迁移 ->可以优化为 创建，删除，更新，导入时 再迁移。 （后面再说）
 
 	// 测试用例1：创建新任务

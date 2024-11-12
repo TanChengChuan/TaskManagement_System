@@ -19,7 +19,7 @@ func ClearScreen() { //清个屏，稍微好看一点
 	cmd.Run()
 }
 
-func TMuser(i int, e *gin.Engine) {
+func TMuser(e *gin.Engine) {
 	//每次都进行数据库的连接》？
 
 	//用viper 读取zap日志

@@ -21,8 +21,11 @@ import (
 
 func Test_auth(t *testing.T) {
 	viper.SetConfigName("config")
-	viper.AddConfigPath("./config")
-	viper.SetConfigType("yaml")
+	viper.AddConfigPath("E:\\Goland\\TaskManagement_System\\taskmanager\\config")
+	viper.SetConfigType("json")
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf("Error reading config file, %s", err)
+	}
 	var err error
 	e := gin.Default()
 	models.DB, err = gorm.Open(mysql.Open(models.DSN))
@@ -41,14 +44,14 @@ func Test_auth(t *testing.T) {
 	routes.SetupRouter(e)
 	port := viper.GetString("server.port")
 	log.Printf("Starting server on port %s", port)
-	if err := e.Run(":" + port); err != nil {
-		log.Fatalf("Failed to start server: %s", err)
-	}
+	//if err := e.Run(":" + port); err != nil {
+	//	log.Fatalf("Failed to start server: %s", err)
+	//}
 	switch int(i) {
 	case 1: //注册
 		{
 
-			controllers.TMuser(i, e)
+			controllers.TMuser(e)
 			fmt.Println("注册完成后，请重新登录账号.")
 			fmt.Println("重新启动中...")
 			time.Sleep(time.Second)
@@ -61,7 +64,7 @@ func Test_auth(t *testing.T) {
 			//补充： 首先根据用户 寻找其OwnerID 然后对应任务， 这样用户进行操作的时候就会比较方便，
 			//像是：创建关联，查找关联，删除关联，更新关联。
 			fmt.Println("请输入账号密码")
-			controllers.TMuser(i, e)
+			controllers.TMuser(e)
 			//在task内也可以加一个循环，然后选择所选的
 			controllers.TMTask(e)
 			//这里应该只有报错 或者 说是自行选择退出 才可以出来了。所以加一个break,直接退出。

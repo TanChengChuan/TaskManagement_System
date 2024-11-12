@@ -30,6 +30,7 @@
       "tasks": []
     }
   ],
+  "OwnerID": "1",
   "task_batches": [
     {
       "tasks": [
@@ -80,12 +81,12 @@
     }
   },
   "jwt": {
-
+  "token": "null",
   "header": {
     "issuer": "example_issuer",
     "audience": "example_audience",
     "expires": 3600,
-    "secret_key": "your_secret_key"
+    "secret_key": "#HswACG10100100010"
   },
   "payload": {
     "alg": "HS256",
